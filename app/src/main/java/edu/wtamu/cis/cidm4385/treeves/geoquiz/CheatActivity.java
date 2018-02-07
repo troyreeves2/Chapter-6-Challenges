@@ -1,5 +1,9 @@
 package edu.wtamu.cis.cidm4385.treeves.geoquiz;
 
+import android.os.Build;
+import android.view.ViewAnimationUtils;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -52,20 +56,32 @@ public class CheatActivity extends AppCompatActivity {
                 } else {
                     mAnswerTextView.setText(R.string.false_button);
                 }
-                mWhether = true;
-                setAnswerShownResult(mWhether);
-            }
+                setAnswerShownResult(true);
+
+
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                int cx = mShowAnswerButton.getWidth() / 2;
+                int cy = mShowAnswerButton.getHeight() / 2;
+                float radius = mShowAnswerButton.getWidth();
+                Animator anim = ViewAnimationUtils
+                        .createCircularReveal(mShowAnswerButton, cx, cy, radius, 0);
+                anim.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        mShowAnswerButton.setVisibility(View.INVISIBLE);
+                    }
+                });
+                anim.start();
+            } else {
+             mShowAnswerButton.setVisibility(View.INVISIBLE);
+         }
+         }
         });
-        setAnswerShownResult(mWhether);
-    }
-    public void onSaveInstanceState(Bundle savedInstanceState){
-        super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putBoolean(KEY_ANSWERED,mWhether);
     }
     private void setAnswerShownResult(boolean isAnswerShown) {
         Intent data = new Intent();
         data.putExtra(EXTRA_ANSWER_SHOWN, isAnswerShown);
         setResult(RESULT_OK, data);
-
     }
 }
